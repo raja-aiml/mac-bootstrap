@@ -1,77 +1,110 @@
-# Mac Setup & Teardown Script
+Your README.md looks solid, but I’ve made some refinements for better clarity, consistency, and readability. Here’s the updated README.md:
 
-## Overview
-This script automates the installation and configuration of a Mac environment using **Homebrew, Zsh, Oh My Zsh, and additional plugins**. It also includes a **teardown** function to clean up and restore previous configurations.
+⸻
 
-## Features
-- **Setup**: Installs Homebrew, Zsh, Oh My Zsh, syntax highlighting, auto-suggestions, and terminal profiles.
-- **Teardown**: Removes installed components and restores previous settings.
-- **Backup & Restore**: Automatically backs up existing configurations before modifying them.
-- **Test**: Checks if the setup was successful.
+Mac Setup & Teardown Script
 
-## Usage
+Overview
 
-### **1. Clone the Repository**
-```bash
-git clone https://github.com/raja-aiml/mac-bootstrap
+This script automates the installation, configuration, and teardown of a Mac development environment using:
+	•	Homebrew (package manager)
+	•	Zsh & Oh My Zsh (shell customization)
+	•	Plugins (syntax highlighting, auto-suggestions)
+	•	Backup & Restore (preserves existing configurations)
+
+Features
+
+✅ Setup – Installs Homebrew, Zsh, Oh My Zsh, essential plugins, and terminal profiles
+✅ Teardown – Uninstalls components and restores previous configurations
+✅ Backup & Restore – Automatically backs up existing settings before modifications
+✅ Test – Verifies if all required packages are installed
+
+⸻
+
+Installation & Usage
+
+1. Clone the Repository
+
+git clone https://github.com/raja-aiml/mac-bootstrap.git
 cd mac-bootstrap
-```
 
-### **2. Make the Script Executable**
-```bash
+2. Make the Script Executable
+
 chmod +x bootstrap.sh
-```
 
-### **3. Run the Script**
+3. Run the Script
 
-#### **Setup the Mac Environment**
-```bash
+🔹 Setup the Mac Environment
+
 ./bootstrap.sh setup
-```
-This will:
-- Install dependencies
-- Configure Zsh and plugins
-- Create profile files
-- Download terminal profiles
 
-#### **Test Installation**
-```bash
+This will:
+	•	Install Homebrew, Zsh, Oh My Zsh
+	•	Configure Zsh plugins (syntax highlighting, auto-suggestions)
+	•	Backup and create profile files (.zshrc, .zprofile, .alias.sh)
+	•	Download the Solarized Dark Terminal profile
+
+⸻
+
+🔍 Test the Installation
+
 ./bootstrap.sh test
-```
-Checks if Homebrew and Zsh are correctly installed.
 
-#### **Teardown & Cleanup**
-```bash
+✅ Pass – All packages are installed correctly
+❌ Fail – Displays missing dependencies
+
+⸻
+
+🗑️ Teardown & Cleanup
+
 ./bootstrap.sh teardown
-```
+
 This will:
-- Restore previous configurations
-- Uninstall installed packages
-- Remove plugins and profile files
+	•	Restore previous configurations
+	•	Uninstall installed packages
+	•	Remove Oh My Zsh, plugins, and terminal profiles
 
-## File Structure
-```
+⸻
+
+File Structure
+
 .
-├── bootstrap.sh.sh  # Main setup and teardown script
-├── README.md        # Documentation file
-└── .backup/         # Backup folder for previous configurations
-```
+├── bootstrap.sh   # Main script (setup, teardown, test)
+├── README.md      # Documentation
+└── LICENSE        # Apache License
 
-## Prerequisites
-- macOS
-- Internet connection (to download dependencies)
 
-## Notes
-- The script automatically handles backups before making changes.
-- The `.backup` folder stores original configurations for restoration.
-- If you face any issues, ensure you have the correct permissions (`chmod +x` before running).
 
-## License
+⸻
+
+Prerequisites
+	•	macOS
+	•	Internet connection (for downloads)
+	•	Admin permissions (for installations)
+
+⸻
+
+Notes
+	•	The script automatically backs up configurations before making changes.
+	•	The .backup/ folder stores the original settings, allowing a safe restore.
+	•	If you encounter permission issues, run with chmod +x before executing the script.
+
+⸻
+
+License
+
 This script is open-source and free to use. Contributions are welcome!
 
-## Author
-**Raja Soundaramourty**
+Author
 
----
-For any issues or improvements, feel free to open a pull request or report bugs.
+👨‍💻 Raja Soundaramourty
 
+📬 For feedback, improvements, or bug reports, feel free to open a pull request!
+
+⸻
+
+🔗 GitHub Repository
+
+⸻
+
+This update makes the README clearer, more structured, and professional while maintaining simplicity. Let me know if you need further refinements! 🚀
