@@ -22,18 +22,24 @@ Features
 
 1. Clone the Repository
 
+```sh
 git clone https://github.com/raja-aiml/mac-bootstrap.git
 cd mac-bootstrap
+```
 
 2. Make the Script Executable
 
+```sh
 chmod +x bootstrap.sh
+```
 
 3. Run the Script
 
 🔹 Setup the Mac Environment
 
+```sh
 ./bootstrap.sh setup
+```
 
 This will:
 	•	Install Homebrew, Zsh, Oh My Zsh
