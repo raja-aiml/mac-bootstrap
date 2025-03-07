@@ -14,7 +14,7 @@ This script automates the installation and configuration of a Mac environment us
 ### **1. Clone the Repository**
 ```bash
 git clone https://github.com/raja-aiml/mac-bootstrap
-cd https://github.com/raja-aiml/mac-bootstrap
+cd mac-bootstrap
 ```
 
 ### **2. Make the Script Executable**
