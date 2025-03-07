@@ -3,23 +3,12 @@
 
 ## Overview
 
-This script automates the installation, configuration, and teardown of a Mac development environment using:
-* Homebrew (package manager)
-* Zsh & Oh My Zsh (shell customization)
-* Plugins (syntax highlighting, auto-suggestions)
-* Backup & Restore (preserves existing configurations)
-
+This script automates the installation, configuration, and teardown of a Mac development environment using **Homebrew** (package manager)
 
 ## Prerequisites
 * macOS
 * Internet connection (for downloads)
 * Admin permissions (for installations)
-
-
-## Notes
-* The script automatically backs up configurations before making changes.
-* The .backup/ folder stores the original settings, allowing a safe restore.
-* If you encounter permission issues, run with chmod +x before executing the script.
 
 
 ## Installation & Usage
@@ -37,9 +26,7 @@ cd mac-bootstrap
 chmod +x bootstrap.sh
 ```
 
-3. Run the Script
-
-🔹 Setup the Mac Environment
+3. Run the Script : Setup the Mac Environment
 
 ```sh
 ./bootstrap.sh setup
@@ -51,16 +38,13 @@ This will:
 * Backup and create profile files (.zshrc, .zprofile, .alias.sh)
 * Download the Solarized Dark Terminal profile~
 
-⸻
 
 🔍 Test the Installation
 
 ```sh
 ./bootstrap.sh test
 ```
-
-- ✅ Pass – All packages are installed correctly
-- ❌ Fail – Displays missing dependencies
+✅ Pass – All packages are installed correctly or  ❌ Fail – Displays missing dependencies
 
 
 🗑️ Teardown & Cleanup
