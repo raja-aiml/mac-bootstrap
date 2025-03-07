@@ -4,17 +4,11 @@
 ## Overview
 
 This script automates the installation, configuration, and teardown of a Mac development environment using:
-	•	Homebrew (package manager)
-	•	Zsh & Oh My Zsh (shell customization)
-	•	Plugins (syntax highlighting, auto-suggestions)
-	•	Backup & Restore (preserves existing configurations)
+* Homebrew (package manager)
+* Zsh & Oh My Zsh (shell customization)
+* Plugins (syntax highlighting, auto-suggestions)
+* Backup & Restore (preserves existing configurations)
 
-Features
-
-✅ Setup – Installs Homebrew, Zsh, Oh My Zsh, essential plugins, and terminal profiles
-✅ Teardown – Uninstalls components and restores previous configurations
-✅ Backup & Restore – Automatically backs up existing settings before modifications
-✅ Test – Verifies if all required packages are installed
 
 ## Prerequisites
 * macOS
@@ -65,8 +59,8 @@ This will:
 ./bootstrap.sh test
 ```
 
-✅ Pass – All packages are installed correctly
-❌ Fail – Displays missing dependencies
+- ✅ Pass – All packages are installed correctly
+- ❌ Fail – Displays missing dependencies
 
 
 🗑️ Teardown & Cleanup
@@ -80,6 +74,12 @@ This will:
 * Uninstall installed packages
 * Remove Oh My Zsh, plugins, and terminal profiles
 
+## Features
+
+1. ✅ Setup – Installs Homebrew, Zsh, Oh My Zsh, essential plugins, and terminal profiles
+1. ✅ Teardown – Uninstalls components and restores previous configurations1. 
+1. ✅ Backup & Restore – Automatically backs up existing settings before modifications
+1. ✅ Test – Verifies if all required packages are installed
 
 ## License
 
