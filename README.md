@@ -16,7 +16,17 @@ Features
 ✅ Backup & Restore – Automatically backs up existing settings before modifications
 ✅ Test – Verifies if all required packages are installed
 
-⸻
+## Prerequisites
+* macOS
+* Internet connection (for downloads)
+* Admin permissions (for installations)
+
+
+## Notes
+* The script automatically backs up configurations before making changes.
+* The .backup/ folder stores the original settings, allowing a safe restore.
+* If you encounter permission issues, run with chmod +x before executing the script.
+
 
 ## Installation & Usage
 
@@ -42,10 +52,10 @@ chmod +x bootstrap.sh
 ```
 
 This will:
-	•	Install Homebrew, Zsh, Oh My Zsh
-	•	Configure Zsh plugins (syntax highlighting, auto-suggestions)
-	•	Backup and create profile files (.zshrc, .zprofile, .alias.sh)
-	•	Download the Solarized Dark Terminal profile
+* Install Homebrew, Zsh, Oh My Zsh
+* Configure Zsh plugins (syntax highlighting, auto-suggestions)
+* Backup and create profile files (.zshrc, .zprofile, .alias.sh)
+* Download the Solarized Dark Terminal profile~
 
 ⸻
 
@@ -66,21 +76,9 @@ This will:
 ```
 
 This will:
-	•	Restore previous configurations
-	•	Uninstall installed packages
-	•	Remove Oh My Zsh, plugins, and terminal profiles
-
-
-## Prerequisites
-	•	macOS
-	•	Internet connection (for downloads)
-	•	Admin permissions (for installations)
-
-
-## Notes
-	•	The script automatically backs up configurations before making changes.
-	•	The .backup/ folder stores the original settings, allowing a safe restore.
-	•	If you encounter permission issues, run with chmod +x before executing the script.
+* Restore previous configurations
+* Uninstall installed packages
+* Remove Oh My Zsh, plugins, and terminal profiles
 
 
 ## License
