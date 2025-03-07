@@ -1,10 +1,7 @@
-Your README.md looks solid, but I’ve made some refinements for better clarity, consistency, and readability. Here’s the updated README.md:
 
-⸻
+# Mac Setup & Teardown Script
 
-Mac Setup & Teardown Script
-
-Overview
+## Overview
 
 This script automates the installation, configuration, and teardown of a Mac development environment using:
 	•	Homebrew (package manager)
@@ -21,7 +18,7 @@ Features
 
 ⸻
 
-Installation & Usage
+## Installation & Usage
 
 1. Clone the Repository
 
@@ -77,21 +74,21 @@ File Structure
 
 ⸻
 
-Prerequisites
+## Prerequisites
 	•	macOS
 	•	Internet connection (for downloads)
 	•	Admin permissions (for installations)
 
 ⸻
 
-Notes
+## Notes
 	•	The script automatically backs up configurations before making changes.
 	•	The .backup/ folder stores the original settings, allowing a safe restore.
 	•	If you encounter permission issues, run with chmod +x before executing the script.
 
 ⸻
 
-License
+## License
 
 This script is open-source and free to use. Contributions are welcome!
 
@@ -101,10 +98,3 @@ Author
 
 📬 For feedback, improvements, or bug reports, feel free to open a pull request!
 
-⸻
-
-🔗 GitHub Repository
-
-⸻
-
-This update makes the README clearer, more structured, and professional while maintaining simplicity. Let me know if you need further refinements! 🚀
