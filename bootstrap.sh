@@ -3,53 +3,97 @@
 # Script: bootstrap.sh
 # Description: Modular Setup and Teardown script for Mac environment
 # Author: Raja Soundaramourty
-# Version: 2.0
+# Version: 3.0
 # Usage: ./bootstrap.sh [setup|teardown|test]
 
 set -e  # Exit on error
 
+# Constants
 BACKUP_DIR="$HOME/.backup"
 PLUGIN_FOLDER="$HOME/.oh-my-zsh/custom/plugins"
 HOMEBREW_PREFIX="/opt/homebrew"
 ZSHRC="$HOME/.zshrc"
 ZPROFILE="$HOME/.zprofile"
 ALIAS_SH="$HOME/.alias.sh"
+PROFILE_PATH="$HOME/workspace/terminal-profiles/SolarizedDark.terminal"
 
 # Packages to install/uninstall
-PACKAGES="zsh zsh-autosuggestions zsh-syntax-highlighting wget gh gum"
+PACKAGES="zsh wget gh gum"
+ZSH_PLUGINS=("zsh-autosuggestions" "zsh-syntax-highlighting")
 
-# Ensure backup folder exists
-function ensure_backup() {
-    mkdir -p "$BACKUP_DIR"
+### ----------------- Helper Functions ----------------- ###
+
+# Ensure a directory exists
+ensure_dir() {
+    [ -d "$1" ] || mkdir -p "$1"
 }
 
+# Backup a file if it exists
+backup_file() {
+    [ -f "$1" ] && cp -v "$1" "$BACKUP_DIR/$(basename "$1").bak"
+}
+
+# Restore a file if a backup exists
+restore_file() {
+    [ -f "$BACKUP_DIR/$(basename "$1").bak" ] && cp -v "$BACKUP_DIR/$(basename "$1").bak" "$1"
+}
+
+# Check if a command exists
+command_exists() {
+    command -v "$1" > /dev/null 2>&1
+}
+
+# Install a Homebrew package if it's not installed
+install_package() {
+    if ! brew list --formula | grep -q "^$1$"; then
+        echo "📥 Installing: $1"
+        brew install "$1"
+    else
+        echo "✅ $1 is already installed."
+    fi
+}
+
+# Clone a Git repository if the folder doesn't exist
+clone_if_missing() {
+    local repo_url=$1
+    local target_dir=$2
+
+    if [ ! -d "$target_dir" ]; then
+        echo "📥 Cloning $(basename "$target_dir")..."
+        git clone "$repo_url" "$target_dir"
+    else
+        echo "✅ $(basename "$target_dir") already exists."
+    fi
+}
+
+### ----------------- Core Functions ----------------- ###
+
 # Backup existing configurations
-function backup_configs() {
-    ensure_backup
+backup_configs() {
+    ensure_dir "$BACKUP_DIR"
     echo "Backing up existing configurations..."
     for file in "$ZSHRC" "$ZPROFILE" "$ALIAS_SH"; do
-        [ -f "$file" ] && cp -v "$file" "$BACKUP_DIR/$(basename "$file").bak"
+        backup_file "$file"
     done
 }
 
 # Restore configurations from backup
-function restore_configs() {
+restore_configs() {
     if [ -d "$BACKUP_DIR" ]; then
         echo "Restoring previous configurations..."
         for file in "$ZSHRC" "$ZPROFILE" "$ALIAS_SH"; do
-            [ -f "$BACKUP_DIR/$(basename "$file").bak" ] && cp -v "$BACKUP_DIR/$(basename "$file").bak" "$file"
+            restore_file "$file"
         done
     else
         echo "No backup found. Skipping restore."
     fi
 }
 
-# Function to install dependencies using Homebrew
-function install_packages() {
+# Install Homebrew and packages
+install_packages() {
     echo "🔹 Checking Homebrew installation..."
     
-    # Check if Homebrew is installed
-    if ! command -v brew &> /dev/null; then
+    if ! command_exists brew; then
         echo "📥 Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
         export PATH="$HOMEBREW_PREFIX/bin:$PATH"
@@ -60,26 +104,19 @@ function install_packages() {
     echo "🔄 Updating Homebrew..."
     brew update && brew upgrade
 
-    # Check and install only missing packages
     echo "📦 Installing missing packages..."
     for package in $PACKAGES; do
-        if ! brew list --formula | grep -q "^$package$"; then
-            echo "📥 Installing: $package"
-            brew install "$package"
-        else
-            echo "✅ $package is already installed."
-        fi
+        install_package "$package"
     done
 
     echo "🔍 Checking for software updates..."
     softwareupdate -l || echo "No updates available."
 }
 
-# Function to configure Zsh and install plugins if missing
-function configure_zsh() {
+# Configure Zsh and install plugins if missing
+configure_zsh() {
     echo "🔹 Checking Oh My Zsh installation..."
 
-    # Install Oh My Zsh if not installed
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
         echo "📥 Installing Oh My Zsh..."
         curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash
@@ -87,153 +124,60 @@ function configure_zsh() {
         echo "✅ Oh My Zsh is already installed."
     fi
 
+    ensure_dir "$PLUGIN_FOLDER"
+    
     echo "🔹 Checking Zsh plugins installation..."
+    for plugin in "${ZSH_PLUGINS[@]}"; do
+        clone_if_missing "https://github.com/zsh-users/$plugin.git" "$PLUGIN_FOLDER/$plugin"
+    done
+}
 
-    # Install zsh-syntax-highlighting if missing
-    if [ ! -d "$PLUGIN_FOLDER/zsh-syntax-highlighting" ]; then
-        echo "📥 Installing zsh-syntax-highlighting..."
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$PLUGIN_FOLDER/zsh-syntax-highlighting"
-    else
-        echo "✅ zsh-syntax-highlighting is already installed."
-    fi
+# Create configuration files only if they don't exist
+create_file_if_missing() {
+    local file_path=$1
+    local content=$2
 
-    # Install zsh-autosuggestions if missing
-    if [ ! -d "$PLUGIN_FOLDER/zsh-autosuggestions" ]; then
-        echo "📥 Installing zsh-autosuggestions..."
-        git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUGIN_FOLDER/zsh-autosuggestions"
+    if [ ! -f "$file_path" ]; then
+        echo "📥 Creating $(basename "$file_path")..."
+        echo "$content" > "$file_path"
     else
-        echo "✅ zsh-autosuggestions is already installed."
+        echo "✅ $(basename "$file_path") already exists. Skipping."
     fi
 }
 
-# Function to create .zprofile only if it doesn't exist
-function setup_zprofile() {
-    if [ ! -f "$ZPROFILE" ]; then
-        echo "📥 Creating .zprofile..."
-        cat << 'EOF' > "$ZPROFILE"
-# shell profiling - time
+setup_zprofile() {
+    create_file_if_missing "$ZPROFILE" '
+# Zsh Profile Configuration
 zmodload zsh/zprof
-
-autoload -Uz compinit
-if [ $(date +'%j') != $(/usr/bin/stat -f '%Sm' -t '%j' ${ZDOTDIR:-$HOME}/.zcompdump) ]; then
-    compinit
-else
-    compinit -C
-fi
-
-## Your language environment
-export LANG=en_US.UTF-8
-
-# Auto Tab Complete
 autoload -Uz compinit && compinit
-
-# Path
-homebrew_prefix_default=/opt/homebrew
-export PATH="$homebrew_prefix_default/bin:$PATH"
-EOF
-    else
-        echo "✅ .zprofile already exists. Skipping."
-    fi
+export LANG=en_US.UTF-8
+export PATH="/opt/homebrew/bin:$PATH"
+'
 }
 
-
-# Function to create .zshrc only if it doesn't exist
-function setup_zshrc() {
-    if [ ! -f "$ZSHRC" ]; then
-        echo "📥 Creating .zshrc..."
-        cat << 'EOF' > "$ZSHRC"
-###################################################################
-
-## Measure & Improve
-timezsh() {
-  shell=${1-$SHELL}
-  for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done
-}
-
-## Time Plugins
-timeplugins() {
-  for plugin ($plugins); do
-    timer=$(($(gdate +%s%N)/1000000))
-    if [ -f $ZSH_CUSTOM/plugins/$plugin/$plugin.plugin.zsh ]; then
-      source $ZSH_CUSTOM/plugins/$plugin/$plugin.plugin.zsh
-    elif [ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]; then
-      source $ZSH/plugins/$plugin/$plugin.plugin.zsh
-    fi
-    now=$(($(gdate +%s%N)/1000000))
-    elapsed=$(($now-$timer))
-    echo $elapsed":" $plugin
-  done
-}
-
-## Check & source file
-function source_file(){
-  file=$1
-  if [ -f "$file" ]; then
-      source $file
-  else
-      echo -e "Error sourcing $file. Check $HOME/.zprofile"
-  fi
-}
-
-## oh-my-zsh
+setup_zshrc() {
+    create_file_if_missing "$ZSHRC" '
+# Zsh Configuration
 export ZSH="$HOME/.oh-my-zsh"
 export ZSH_THEME="robbyrussell"
-
-plugins=(
-  git
-  zsh-syntax-highlighting
-  zsh-autosuggestions
-)
-
-source_file "$HOME/.oh-my-zsh/oh-my-zsh.sh"
-if [[ "$(uname -m)" == "arm64" ]]; then
-  source_file "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  source_file "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-else
-  source_file "/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  source_file "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-fi
-
-source_file "$HOME/.alias.sh"
-EOF
-    else
-        echo "✅ .zshrc already exists. Skipping."
-    fi
+plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
+source "$HOME/.oh-my-zsh/oh-my-zsh.sh"
+'
 }
 
-# Function to create .alias.sh only if it doesn't exist
-function setup_aliases() {
-    if [ ! -f "$ALIAS_SH" ]; then
-        echo "📥 Creating .alias.sh..."
-        cat << 'EOF' > "$ALIAS_SH"
-#!/usr/bin/env sh
-
-# Edit ohmyzsh
+setup_aliases() {
+    create_file_if_missing "$ALIAS_SH" '
+# Aliases Configuration
 alias ohmyzsh="code ~/.oh-my-zsh"
-
-# Mac Alias
-alias clean-mac='find . -name ".DS_Store" -type f -delete'
-
-# zsh config
-alias zshconfig='code ~/.zshrc ~/.zprofile ~/.alias.sh'
-
-# Find port
-lsof_port() {
-    lsof -nP -iTCP -sTCP:LISTEN | grep "$1"
-}
-EOF
-    else
-        echo "✅ .alias.sh already exists. Skipping."
-    fi
+alias clean-mac="find . -name .DS_Store -type f -delete"
+alias zshconfig="code ~/.zshrc ~/.zprofile ~/.alias.sh"
+'
 }
 
-# Function to download Terminal Profile only if it doesn't exist
-function download_terminal_profile() {
-    PROFILE_PATH="$HOME/workspace/terminal-profiles/SolarizedDark.terminal"
-    
+download_terminal_profile() {
+    ensure_dir "$(dirname "$PROFILE_PATH")"
     if [ ! -f "$PROFILE_PATH" ]; then
         echo "📥 Downloading Terminal Profile..."
-        mkdir -p "$HOME/workspace/terminal-profiles"
         wget -q -O "$PROFILE_PATH" https://raw.githubusercontent.com/rajasoun/mac-onboard/9e22d9e5f9dbdf002f98fba7777621b5625ac0e4/profiles/SolarizedDark.terminal
     else
         echo "✅ Terminal Profile already exists. Skipping."
@@ -241,40 +185,32 @@ function download_terminal_profile() {
 }
 
 # Teardown function
-function teardown() {
+teardown() {
     echo "Starting teardown process..."
     restore_configs
     echo "Removing installed packages..."
-     brew uninstall $PACKAGES || true
-    rm -rf "$PLUGIN_FOLDER/zsh-syntax-highlighting" "$PLUGIN_FOLDER/zsh-autosuggestions" || true
+    brew uninstall $PACKAGES || true
+    for plugin in "${ZSH_PLUGINS[@]}"; do
+        rm -rf "$PLUGIN_FOLDER/$plugin"
+    done
     rm -rf "$HOME/.oh-my-zsh" "$HOME/workspace/terminal-profiles" || true
     echo "Teardown complete."
 }
 
 # Function to test if all required packages are installed
-function test_setup() {
+test_setup() {
     echo "Testing installation..."
 
-    # Check if Homebrew is installed
-    if ! command -v brew &> /dev/null; then
+    if ! command_exists brew; then
         echo "❌ Homebrew is not installed. Setup failed."
         exit 1
     fi
 
-    # Check if all required packages are installed
     missing_packages=()
     for package in $PACKAGES; do
-        # Ignore if package name is zsh-autosuggestions or zsh-syntax-highlighting
-        if [ "$package" = "zsh-autosuggestions" ] || [ "$package" = "zsh-syntax-highlighting" ]; then
-            continue
-        fi
-        
-        if ! command -v "$package" &> /dev/null; then
-            missing_packages+=("$package")
-        fi
+        command_exists "$package" || missing_packages+=("$package")
     done
 
-    # Display result
     if [ ${#missing_packages[@]} -eq 0 ]; then
         echo "✅ All packages are installed successfully."
     else
@@ -283,8 +219,7 @@ function test_setup() {
     fi
 }
 
-# Main function
-function main() {
+main() {
     case "$1" in
         setup)
             backup_configs
