@@ -58,7 +58,6 @@ This will:
 ✅ Pass – All packages are installed correctly
 ❌ Fail – Displays missing dependencies
 
-⸻
 
 🗑️ Teardown & Cleanup
 
@@ -71,21 +70,18 @@ This will:
 	•	Uninstall installed packages
 	•	Remove Oh My Zsh, plugins, and terminal profiles
 
-⸻
 
 ## Prerequisites
 	•	macOS
 	•	Internet connection (for downloads)
 	•	Admin permissions (for installations)
 
-⸻
 
 ## Notes
 	•	The script automatically backs up configurations before making changes.
 	•	The .backup/ folder stores the original settings, allowing a safe restore.
 	•	If you encounter permission issues, run with chmod +x before executing the script.
 
-⸻
 
 ## License
 
