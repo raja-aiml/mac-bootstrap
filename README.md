@@ -51,7 +51,9 @@ This will:
 
 🔍 Test the Installation
 
+```sh
 ./bootstrap.sh test
+```
 
 ✅ Pass – All packages are installed correctly
 ❌ Fail – Displays missing dependencies
@@ -60,23 +62,14 @@ This will:
 
 🗑️ Teardown & Cleanup
 
+```sh
 ./bootstrap.sh teardown
+```
 
 This will:
 	•	Restore previous configurations
 	•	Uninstall installed packages
 	•	Remove Oh My Zsh, plugins, and terminal profiles
-
-⸻
-
-File Structure
-
-.
-├── bootstrap.sh   # Main script (setup, teardown, test)
-├── README.md      # Documentation
-└── LICENSE        # Apache License
-
-
 
 ⸻
 
