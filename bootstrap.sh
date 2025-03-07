@@ -44,29 +44,73 @@ function restore_configs() {
     fi
 }
 
-# Install dependencies using Homebrew
+# Function to install dependencies using Homebrew
 function install_packages() {
-    echo "Installing dependencies..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-    export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+    echo "🔹 Checking Homebrew installation..."
+    
+    # Check if Homebrew is installed
+    if ! command -v brew &> /dev/null; then
+        echo "📥 Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+    else
+        echo "✅ Homebrew is already installed."
+    fi
+
+    echo "🔄 Updating Homebrew..."
     brew update && brew upgrade
-    brew install $PACKAGES || true
-    softwareupdate -l
+
+    # Check and install only missing packages
+    echo "📦 Installing missing packages..."
+    for package in $PACKAGES; do
+        if ! brew list --formula | grep -q "^$package$"; then
+            echo "📥 Installing: $package"
+            brew install "$package"
+        else
+            echo "✅ $package is already installed."
+        fi
+    done
+
+    echo "🔍 Checking for software updates..."
+    softwareupdate -l || echo "No updates available."
 }
 
-# Configure Zsh and plugins
+# Function to configure Zsh and install plugins if missing
 function configure_zsh() {
-    echo "Configuring Zsh and plugins..."
-    curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$PLUGIN_FOLDER/zsh-syntax-highlighting"
-    git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUGIN_FOLDER/zsh-autosuggestions"
-  
+    echo "🔹 Checking Oh My Zsh installation..."
+
+    # Install Oh My Zsh if not installed
+    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+        echo "📥 Installing Oh My Zsh..."
+        curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash
+    else
+        echo "✅ Oh My Zsh is already installed."
+    fi
+
+    echo "🔹 Checking Zsh plugins installation..."
+
+    # Install zsh-syntax-highlighting if missing
+    if [ ! -d "$PLUGIN_FOLDER/zsh-syntax-highlighting" ]; then
+        echo "📥 Installing zsh-syntax-highlighting..."
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$PLUGIN_FOLDER/zsh-syntax-highlighting"
+    else
+        echo "✅ zsh-syntax-highlighting is already installed."
+    fi
+
+    # Install zsh-autosuggestions if missing
+    if [ ! -d "$PLUGIN_FOLDER/zsh-autosuggestions" ]; then
+        echo "📥 Installing zsh-autosuggestions..."
+        git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUGIN_FOLDER/zsh-autosuggestions"
+    else
+        echo "✅ zsh-autosuggestions is already installed."
+    fi
 }
 
-# Create .zprofile file
+# Function to create .zprofile only if it doesn't exist
 function setup_zprofile() {
-    echo "Creating .zprofile..."
-    cat << 'EOF' > "$ZPROFILE"
+    if [ ! -f "$ZPROFILE" ]; then
+        echo "📥 Creating .zprofile..."
+        cat << 'EOF' > "$ZPROFILE"
 # shell profiling - time
 zmodload zsh/zprof
 
@@ -87,12 +131,17 @@ autoload -Uz compinit && compinit
 homebrew_prefix_default=/opt/homebrew
 export PATH="$homebrew_prefix_default/bin:$PATH"
 EOF
+    else
+        echo "✅ .zprofile already exists. Skipping."
+    fi
 }
 
-# Create .zshrc file
+
+# Function to create .zshrc only if it doesn't exist
 function setup_zshrc() {
-    echo "Creating .zshrc..."
-    cat << 'EOF' > "$ZSHRC"
+    if [ ! -f "$ZSHRC" ]; then
+        echo "📥 Creating .zshrc..."
+        cat << 'EOF' > "$ZSHRC"
 ###################################################################
 
 ## Measure & Improve
@@ -147,12 +196,16 @@ fi
 
 source_file "$HOME/.alias.sh"
 EOF
+    else
+        echo "✅ .zshrc already exists. Skipping."
+    fi
 }
 
-# Create .alias.sh file
+# Function to create .alias.sh only if it doesn't exist
 function setup_aliases() {
-    echo "Creating .alias.sh..."
-    cat << 'EOF' > "$ALIAS_SH"
+    if [ ! -f "$ALIAS_SH" ]; then
+        echo "📥 Creating .alias.sh..."
+        cat << 'EOF' > "$ALIAS_SH"
 #!/usr/bin/env sh
 
 # Edit ohmyzsh
@@ -169,14 +222,22 @@ lsof_port() {
     lsof -nP -iTCP -sTCP:LISTEN | grep "$1"
 }
 EOF
+    else
+        echo "✅ .alias.sh already exists. Skipping."
+    fi
 }
 
-# Download Terminal Profile
+# Function to download Terminal Profile only if it doesn't exist
 function download_terminal_profile() {
-    echo "Downloading Terminal Profile..."
-    mkdir -p "$HOME/workspace/terminal-profiles"
-    cd "$HOME/workspace/terminal-profiles"
-    wget https://raw.githubusercontent.com/rajasoun/mac-onboard/9e22d9e5f9dbdf002f98fba7777621b5625ac0e4/profiles/SolarizedDark.terminal
+    PROFILE_PATH="$HOME/workspace/terminal-profiles/SolarizedDark.terminal"
+    
+    if [ ! -f "$PROFILE_PATH" ]; then
+        echo "📥 Downloading Terminal Profile..."
+        mkdir -p "$HOME/workspace/terminal-profiles"
+        wget -q -O "$PROFILE_PATH" https://raw.githubusercontent.com/rajasoun/mac-onboard/9e22d9e5f9dbdf002f98fba7777621b5625ac0e4/profiles/SolarizedDark.terminal
+    else
+        echo "✅ Terminal Profile already exists. Skipping."
+    fi
 }
 
 # Teardown function
