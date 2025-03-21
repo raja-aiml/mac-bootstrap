@@ -18,7 +18,7 @@ ALIAS_SH="$HOME/.alias.sh"
 PROFILE_PATH="$HOME/workspace/terminal-profiles/SolarizedDark.terminal"
 
 # Packages to install/uninstall
-PACKAGES="zsh wget gh gum"
+PACKAGES="zsh wget gh gum go-task"
 ZSH_PLUGINS=("zsh-autosuggestions" "zsh-syntax-highlighting")
 
 ### ----------------- Helper Functions ----------------- ###
